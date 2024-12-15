@@ -1,9 +1,9 @@
 The provided data summary offers a comprehensive overview of a dataset comprising 10,000 book records. Each record contains various attributes related to book identification, authorship, publication, ratings, and reviews. Below is a detailed analysis based on the different components of the dataset:
 # 1. Descriptive Statistics
 ## a. Unique Identifiers
-•	Book IDs: The dataset consists of 10,000 book records, with the mean book ID being 5000.5 and a standard deviation of approximately 2886.90. This indicates a relatively even distribution over a range from 1 to 10,000.
-•	Goodreads IDs: The mean is around 5,264,696, suggesting a wide variety of books indexed on Goodreads. The standard deviation (7,575,461.86) indicates significant variability, with a minimum of 1 and a maximum of 33,288,638.
-•	Best Book IDs and Work IDs show a similar pattern in terms of mean and standard deviation, indicating a consistent structure within the dataset.
+- Book IDs: The dataset consists of 10,000 book records, with the mean book ID being 5000.5 and a standard deviation of approximately 2886.90. This indicates a relatively even distribution over a range from 1 to 10,000.
+- Goodreads IDs: The mean is around 5,264,696, suggesting a wide variety of books indexed on Goodreads. The standard deviation (7,575,461.86) indicates significant variability, with a minimum of 1 and a maximum of 33,288,638.
+- Best Book IDs and Work IDs show a similar pattern in terms of mean and standard deviation, indicating a consistent structure within the dataset.
 
 ## b. Author and Publication Data
 •	There are 4,664 unique authors in the dataset, with Stephen King being the most prolific, appearing 60 times. This highlights a concentration of authorship, possibly with certain popular names dominating the dataset.
