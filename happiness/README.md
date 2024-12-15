@@ -34,19 +34,19 @@ Positive and Negative Affect
 -	Negative Affect: The average is 0.27 and shows a notable negative correlation (-0.35) with Life Ladder, indicating that lower experiences of negative emotions are linked to higher life satisfaction.
 # 5. Missing Values Analysis
 -	There are several variables with missing data:
-o	Log GDP per capita (28 missing)
-o	Social support (13 missing)
-o	Healthy life expectancy at birth (63 missing)
-o	Freedom to make life choices (36 missing)
-o	Generosity (81 missing)
-o	Perceptions of corruption (125 missing)
-o	Positive affect (24 missing)
-o	Negative affect (16 missing)
+*	Log GDP per capita (28 missing)
+*	Social support (13 missing)
+*	Healthy life expectancy at birth (63 missing)
+*	Freedom to make life choices (36 missing)
+*	Generosity (81 missing)
+*	Perceptions of corruption (125 missing)
+*	Positive affect (24 missing)
+*	Negative affect (16 missing)
 -	This indicates that the strength and reliability of certain analyses might be compromised, particularly those relying heavily on GDP or health indicators.
 # 6. Correlation Insights
 -	Key Relationships:
-o	Significant positive correlations exist between Life Ladder and Log GDP per capita (0.78), Social Support (0.72), and Healthy Life Expectancy (0.71).
-o	Negative relationships are observed between Life Ladder and Perceptions of Corruption (-0.43).
+*	Significant positive correlations exist between Life Ladder and Log GDP per capita (0.78), Social Support (0.72), and Healthy Life Expectancy (0.71).
+*	Negative relationships are observed between Life Ladder and Perceptions of Corruption (-0.43).
 # 7. Conclusion
 This dataset reveals essential insights into how various indicators, including economic, social, and health factors, relate to subjective well-being across countries. The significant correlations underscore the importance of economic stability, social support, and health in enhancing life satisfaction. However, the analysis is tempered by the presence of missing values and the inherent complexity of measuring happiness and well-being across diverse cultural contexts. Further detailed statistical modeling could provide richer insights and address the gaps in the data.
 
