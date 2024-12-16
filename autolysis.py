@@ -268,38 +268,54 @@ def request_llm_analysis(metadata, data_samples, tool):
         print(f"Error with OpenAI request: {e}")
         return None
 
-
 def save_to_readme(storytelling_result, tool, directory_name, tool_name="storytelling"):
+    """
+    Save storytelling results to a README.md file inside the specified directory.
+
+    Args:
+        storytelling_result (str): The storytelling results to save.
+        tool (dict): A dictionary containing tool metadata, like its name.
+        directory_name (str): The directory where the README.md will be saved.
+        tool_name (str, optional): The name of the tool generating the results. Default is "storytelling".
+    
+    Returns:
+        str: The path to the saved README.md file.
+    """
     try:
-        # Create the folder path using the provided directory_name
+        # Create the target folder
         folder_path = os.path.join(os.getcwd(), directory_name)
         os.makedirs(folder_path, exist_ok=True)
 
-        # Define the path for the README.md
+        # Define the path for the README.md file inside the target folder
+        readme_path = os.path.join(folder_path, "README.md")
 
-        # Open the README.md file to write the storytelling results
-        with open("README.md", "w", encoding="utf-8") as readme_file:
+        # Open the README.md file in write mode
+        with open(readme_path, "w", encoding="utf-8") as readme_file:
             if storytelling_result:
                 # Write the tool name as a header
                 readme_file.write(
                     f"## {tool_name} Result for {directory_name}.csv:\n\n"
                 )
-
                 # Write the storytelling result (already formatted neatly)
                 readme_file.write(storytelling_result)
             else:
                 # If no result, mention no relevant data available
-                readme_file.write(f"## {tool_name} Result for {tool['name']}:\n\n")
+                tool_name_display = tool.get("name", "Unknown Tool")
+                readme_file.write(f"## {tool_name} Result for {tool_name_display}:\n\n")
                 readme_file.write(
-                    f"No relevant data available for this {tool['name']}.\n"
+                    f"No relevant data available for this {tool_name_display}.\n"
                 )
 
             # Add extra space between different sections
             readme_file.write("\n\n")
 
-        print(f"README.md successfully saved in {directory_name} folder.")
+        print(f"README.md successfully saved in {folder_path}.")
+        return readme_path
+
     except Exception as e:
         print(f"Error writing to README.md: {e}")
+        raise
+
 
 
 def visualize_outliers(outliers):
