@@ -25,7 +25,7 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import base64
 
-AIPROXY_TOKEN = os.environ["AIPROXY_TOKEN"]
+AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN")
 
 
 # Load your CSV file
