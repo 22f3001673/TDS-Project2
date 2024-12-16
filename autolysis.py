@@ -25,9 +25,12 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import base64
 
+# Fetch API token from environment variable
 AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN")
 
-# Load your CSV file
+# Function to load a CSV file
+# This includes handling exceptions for different encodings
+# Returns a DataFrame if successful, or None otherwise
 def load_csv(file_path):
     # Load a CSV file into a DataFrame
     try:
@@ -39,9 +42,9 @@ def load_csv(file_path):
         print(f"Error loading file: {e}")
         return None
 
-
+# Extract metadata and basic information from the dataset
 def get_info(df):
-    # Extract metadata such as column names, data types, and summary statistics
+    # Provides column names, data types, missing value counts, summary statistics, and sample data
     information = {
         "columns": list(df.columns),
         "dtypes": {col: str(df[col].dtype) for col in df.columns},
@@ -51,7 +54,7 @@ def get_info(df):
     }
     return information
 
-
+# Extract subsets of numeric and categorical data from the DataFrame
 def extract_relevant_data(df, max_rows=100):
     # Extract numeric and categorical data samples for analysis
     numeric_data = df.select_dtypes(include=["number"]).sample(
@@ -65,7 +68,8 @@ def extract_relevant_data(df, max_rows=100):
         "categorical_sample": categorical_data.to_dict(orient="records"),
     }
 
-
+# Define the available analysis tools and their descriptions
+# This structure is used to dynamically choose and execute tools
 def define_analysis_tools():
     return [
         {
@@ -107,7 +111,7 @@ def define_analysis_tools():
     ]
 
 
-
+# Request storytelling from an LLM using dataset information and analysis results
 def request_llm_storytelling(info, analysis_results, chart_path):
     import base64
     import json
@@ -116,11 +120,10 @@ def request_llm_storytelling(info, analysis_results, chart_path):
     # Open the chart file and encode it to base64
     with open(chart_path, "rb") as image_file:
         image_data = image_file.read()
-
     # Encode the image data to base64
     base64_image = base64.b64encode(image_data).decode("utf-8")
 
-    # Prepare the prompt with dataset info and analysis results
+    # Prepare the storytelling prompt with dataset details
     prompt = (
         "You are a data analysis assistant. Based on the dataset info, analysis results, and provided charts, write a concise and structured narrative that includes:\n"
         "1. A summary of the dataset, including key characteristics like missing data, outliers, and correlations.\n"
@@ -181,7 +184,6 @@ def request_llm_storytelling(info, analysis_results, chart_path):
                 f"#### Implications of the Findings:\n"
                 f"- {analysis_results.get('implications', 'N/A')}\n\n"
             )
-
             return formatted_story
         else:
             print(f"Error: {response.status_code} - {response.text}")
@@ -316,7 +318,6 @@ def save_to_readme(storytelling_result, tool, directory_name, tool_name="storyte
         raise
 
 
-
 def visualize_outliers(outliers):
     outliers = np.array(outliers)
 
@@ -375,7 +376,6 @@ def visualize_correlation_matrix(correlation_matrix):
 
     return fig  # Return the figure object instead of the file name
 
-
 def create_directory_for_file(file_name):
     # Use the current working directory instead of creating a folder based on the file name
     directory_name = os.getcwd()  # This gets the current working directory
@@ -389,7 +389,6 @@ def save_chart(chart, directory_name, chart_name):
     plt.close(chart)  # Close the figure after saving to free up memory
 
     return chart_path  # Return the saved chart path
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
