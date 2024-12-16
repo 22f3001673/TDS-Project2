@@ -25,14 +25,23 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import base64
 
-# Fetch API token from environment variable
+# Fetch API token from environment variable for authenticating with external APIs (like OpenAI)
 AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN")
 
+# ------------------- DATA LOADING -------------------
 # Function to load a CSV file
 # This includes handling exceptions for different encodings
 # Returns a DataFrame if successful, or None otherwise
 def load_csv(file_path):
-    # Load a CSV file into a DataFrame
+    """
+    Load the given CSV file into a pandas DataFrame with error handling.
+    
+    Args:
+        file_path (str): The path to the CSV file.
+    
+    Returns:
+        pd.DataFrame or None: Loaded DataFrame or None if an error occurs.
+    """
     try:
         data = pd.read_csv(
             file_path, encoding="ISO-8859-1"
@@ -42,9 +51,18 @@ def load_csv(file_path):
         print(f"Error loading file: {e}")
         return None
 
-# Extract metadata and basic information from the dataset
+# -------------------- DATA INFORMATION EXTRACTION -------------------
+# Extract metadata and summary statistics from the dataset
 def get_info(df):
-    # Provides column names, data types, missing value counts, summary statistics, and sample data
+    """
+    Extract metadata such as column names, data types, missing values, and summary statistics.
+    
+    Args:
+        df (pd.DataFrame): The dataset.
+    
+    Returns:
+        dict: Dictionary containing dataset metadata and sample data.
+    """
     information = {
         "columns": list(df.columns),
         "dtypes": {col: str(df[col].dtype) for col in df.columns},
@@ -54,9 +72,23 @@ def get_info(df):
     }
     return information
 
-# Extract subsets of numeric and categorical data from the DataFrame
+# -------------------- DATA SAMPLING -------------------
+# Extract samples of numeric and categorical data from the DataFrame for analysis
 def extract_relevant_data(df, max_rows=100):
-    # Extract numeric and categorical data samples for analysis
+    """
+    Extract samples of numeric and categorical data for analysis.
+    
+    Args:
+        df (pd.DataFrame): The dataset.
+        max_rows (int): Maximum number of rows to sample.
+    
+    Returns:
+        dict: Contains sampled numeric and categorical data.
+    
+    Notes:
+        - Numeric and categorical columns are handled separately.
+        - Limits samples to `max_rows` for efficiency.
+    """
     numeric_data = df.select_dtypes(include=["number"]).sample(
         n=min(len(df), max_rows), random_state=42
     )
@@ -68,9 +100,18 @@ def extract_relevant_data(df, max_rows=100):
         "categorical_sample": categorical_data.to_dict(orient="records"),
     }
 
-# Define the available analysis tools and their descriptions
+
+# -------------------- DEFINE ANALYSIS TOOLS -------------------
+# Define the available analysis tools and their descriptions for processing the dataset
 # This structure is used to dynamically choose and execute tools
 def define_analysis_tools():
+    """
+    Define tools and methods for analyzing the dataset.
+    
+    Returns:
+        list: Definitions of analysis tools, including outlier detection,
+              correlation analysis, and storytelling.
+    """
     return [
         {
             "name": "outlier_detection",
@@ -110,9 +151,20 @@ def define_analysis_tools():
         },
     ]
 
-
+# -------------------- STORYTELLING -------------------
 # Request storytelling from an LLM using dataset information and analysis results
 def request_llm_storytelling(info, analysis_results, chart_path):
+    """
+    Use an API to request storytelling insights based on dataset analysis and charts.
+    
+    Args:
+        info (dict): Dataset metadata and information.
+        analysis_results (dict): Results of analysis tools.
+        chart_path (str): Path to the saved chart image.
+    
+    Returns:
+        str or None: Storytelling result as text or None if the request fails.
+    """
     import base64
     import json
     import requests  # Ensure requests is imported
@@ -319,6 +371,15 @@ def save_to_readme(storytelling_result, tool, directory_name, tool_name="storyte
 
 
 def visualize_outliers(outliers):
+    """
+    Visualize detected outliers using a strip plot.
+
+    Args:
+        outliers (list or np.ndarray): List or array of outlier values.
+
+    Returns:
+        matplotlib.figure.Figure: The generated strip plot figure.
+    """
     outliers = np.array(outliers)
 
     # Create the figure and axis
@@ -337,6 +398,15 @@ def visualize_outliers(outliers):
 
 
 def visualize_correlation_matrix(correlation_matrix):
+    """
+    Create a heatmap visualization of the correlation matrix.
+
+    Args:
+        correlation_matrix (pd.DataFrame or np.ndarray): The computed correlation matrix.
+
+    Returns:
+        matplotlib.figure.Figure: The generated heatmap figure.
+    """
     correlation_matrix = pd.DataFrame(correlation_matrix)
 
     # Ensure all data in the correlation matrix is numeric
@@ -383,36 +453,61 @@ def create_directory_for_file(file_name):
 
 
 def save_chart(chart, directory_name, chart_name):
+    """
+    Save the generated chart to the specified directory with a given name.
+
+    Args:
+        chart (matplotlib.figure.Figure): The figure to be saved.
+        directory_name (str): Path to the directory where the chart will be saved.
+        chart_name (str): Name of the output file.
+
+    Returns:
+        str: The full path to the saved chart.
+    """
+    # Ensure the directory exists
     os.makedirs(directory_name, exist_ok=True)
+
+    # Construct the full path to save the chart
     chart_path = os.path.join(directory_name, chart_name)
-    chart.savefig(chart_path, dpi=80)  # Save with 80 dpi for 512x512 px
-    plt.close(chart)  # Close the figure after saving to free up memory
+
+    # Save with 80 dpi for (512x512 pixels approx.)
+    chart.savefig(chart_path, dpi=80)  
+    plt.close(chart)  # Close the plot after saving to free up memory
 
     return chart_path  # Return the saved chart path
 
 if __name__ == "__main__":
+    # Set up command-line arguments for specifying the input CSV file
     parser = argparse.ArgumentParser(
         description="Analyze a CSV file using OpenAI-powered functions."
     )
     parser.add_argument("file_name", type=str, help="Name of the CSV file to analyze.")
     args = parser.parse_args()
 
+    # Load the dataset from the specified file
     df = load_csv(args.file_name)
     if df is not None:
+        # Extract dataset information and summaries
         information = get_info(df)
         dataset = extract_relevant_data(df)
-        tools = define_analysis_tools()
-        analysis_results = {}
-        chart_paths = []
 
+        # Define available analysis tools
+        tools = define_analysis_tools()
+        analysis_results = {}    # Dictionary to store analysis results
+        chart_paths = []    # List to keep paths of generated charts
+        
+        # Get the directory for saving charts and outputs
         directory_name = create_directory_for_file(args.file_name)
+        
+        # Perform analysis with each tool (except storytelling initially)
         for tool in tools:
             if tool["name"] == "storytelling":
-                continue
-
+                continue    # Skip storytelling for now
+            # Prepare data for the specific tool
             relevant_data = prepare_function_data(df, tool["name"])
             if relevant_data:
                 print(f"Requesting analysis for {tool['name']}...")
+                # Request LLM analysis results
                 result = request_llm_analysis(
                     information, {"data": relevant_data}, tool
                 )
@@ -422,6 +517,7 @@ if __name__ == "__main__":
                 if result:
                     print(f"Results for {tool['name']}:\n", result)
                     analysis_results[tool["name"]] = result
+                    # Visualize the results if applicable
                     if tool["name"] == "outlier_detection":
                         chart = visualize_outliers(result)
                         chart_paths.append(
@@ -432,20 +528,18 @@ if __name__ == "__main__":
                         chart_paths.append(
                             save_chart(chart, directory_name, "correlation.png")
                         )
-
+        # Handle storytelling
         storytelling_tool = next(
             (tool for tool in tools if tool["name"] == "storytelling"), None
         )
         if storytelling_tool:
             for chart_path in chart_paths:  # Iterate over every chart path
-                # Map chart filenames to the specific analysis result keys
-
-                # Call request_llm_storytelling for the current chart and its corresponding analysis result
+                # Generate storytelling results for each chart
                 storytelling_result = request_llm_storytelling(
                     information, analysis_results, chart_path
                 )
-
                 # Save the storytelling result to the README.md for this chart
                 save_to_readme(storytelling_result, storytelling_tool, directory_name)
         else:
+            # If no storytelling tool, create an empty README.md
             save_to_readme(None, storytelling_tool, directory_name)
