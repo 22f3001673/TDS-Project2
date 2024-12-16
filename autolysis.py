@@ -377,9 +377,8 @@ def visualize_correlation_matrix(correlation_matrix):
 
 
 def create_directory_for_file(file_name):
-    directory_name = os.path.splitext(file_name)[0]
-    if not os.path.exists(directory_name):
-        os.makedirs(directory_name)
+    # Use the current working directory instead of creating a folder based on the file name
+    directory_name = os.getcwd()  # This gets the current working directory
     return directory_name
 
 
