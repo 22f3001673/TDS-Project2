@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 import base64
 
 AIPROXY_TOKEN = os.getenv("AIPROXY_TOKEN")
-
+AIPROXY_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6IjIzZjIwMDEwMzNAZHMuc3R1ZHkuaWl0bS5hYy5pbiJ9.k9fMWqKY3JE5FHeducM7P_XT5fLaWaZJjsTDb9-e7pc"
 # Load your CSV file
 def load_csv(file_path):
     # Load a CSV file into a DataFrame
