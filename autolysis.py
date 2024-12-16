@@ -108,9 +108,6 @@ def define_analysis_tools():
     ]
 
 
-import json
-import requests
-
 
 def request_llm_storytelling(info, analysis_results, chart_path):
     import base64
